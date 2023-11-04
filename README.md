@@ -43,10 +43,10 @@ yc_folder_id = id каталога
 # Пояснения
 
 * инфраструктура проекта взята из задания 7 (настройка сбора логов в elasticsearch):
-  * lb0: балансировщик (nginx);
-  * app0-1: сервера веб-приложения (Wordpress);
-  * db0: база данных веб-приложения (mariadb);
+  * ```lb0```: балансировщик (nginx);
+  * ```app0-1```: сервера веб-приложения (Wordpress);
+  * ```db0```: база данных веб-приложения (mariadb);
 * роли для установки OpenSearch скопированы из [репозитория](https://github.com/opensearch-project/ansible-playbook) в каталог ```roles```;
-* OpenSearch, Dashboards и Logstash устанавливаются на сервере os0;
-* Zookeeper и Kafka разворачиваются в кластере на серверах kafka0-2;
-* Filebeat устанавливается на серверах: lb0, app0-1.
+* OpenSearch, Dashboards и Logstash устанавливаются на сервере ```os0```;
+* Zookeeper и Kafka разворачиваются в кластере на серверах ```kafka0-2```;
+* Filebeat устанавливается на серверах: ```lb0```, ```app0-1```.
