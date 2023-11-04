@@ -4,16 +4,6 @@ filebeat.inputs:
   paths:
   - /var/log/nginx/*.log
 
-#output.logstash:
-#  hosts:
-#  - {{ hostvars['os0'].ansible_host }}:5044
-
-#output.logstash:
-#  hosts:
-#{% for i in groups.logstash %}
-#  - {{ hostvars[i].ansible_host }}:5044
-#{% endfor %}
-
 output.kafka:
   hosts: 
 {% for i in groups.kafka %}

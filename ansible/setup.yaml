@@ -68,18 +68,6 @@
     include_tasks: "app.yaml"
     when: inventory_hostname in groups["app"]
 
-       
-#  - name: Test import 1
-#    import_role:
-#      name: linux/opensearch
-#    when: inventory_hostname in groups["os-cluster"]
-#
-#  - name: Opensearch dashboards installation & configuration
-#    import_role:
-#      name: linux/dashboards
-#    when: inventory_hostname in groups["dashboards"]
-
-      #post_tasks:
   - name: Loadbalancer | Install and configure Nginx
     include_tasks: "lb.yaml"
     when: inventory_hostname in groups["lb"]
@@ -100,8 +88,6 @@
 
   - name: Install logstash
     include_tasks: "logstash.yaml"
-      #when: inventory_hostname in groups["os-cluster"]
-      #when: inventory_hostname == 'os0'
     when: inventory_hostname in groups.logstash
 
   - name: Install Zookeeper

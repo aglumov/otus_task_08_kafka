@@ -24,7 +24,6 @@
 
 - name: Zookeeper | Download and unarchive zookeeper
   ansible.builtin.unarchive:
-    #src: "https://dlcdn.apache.org/zookeeper/zookeeper-3.9.1/apache-zookeeper-3.9.1-bin.tar.gz"
     src: "https://archive.apache.org/dist/zookeeper/zookeeper-3.6.4/apache-zookeeper-3.6.4-bin.tar.gz"
     dest: "{{ zk_root_dir }}"
     remote_src: true

@@ -51,12 +51,6 @@
     src: files/kafka.service
     dest: /etc/systemd/system/kafka.service    
 
-- name: Kafka | Check if zookeeper is started
-  ansible.builtin.systemd:
-    name: zookeeper
-    state: started
-    daemon_reload: true
-
 - name: Kafka | Check if kafka is started
   ansible.builtin.systemd:
     name: kafka
