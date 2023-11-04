@@ -1,0 +1,29 @@
+filebeat.inputs:
+- type: filestream
+  id: {{ inventory_hostname }}-logs
+  paths:
+  - /var/log/nginx/*.log
+
+#output.logstash:
+#  hosts:
+#  - {{ hostvars['os0'].ansible_host }}:5044
+
+#output.logstash:
+#  hosts:
+#{% for i in groups.logstash %}
+#  - {{ hostvars[i].ansible_host }}:5044
+#{% endfor %}
+
+output.kafka:
+  hosts: 
+{% for i in groups.kafka %}
+  - {{ hostvars[i].ansible_host }}:9092
+{% endfor %}
+  topic:
+{%- if inventory_hostname in groups.lb %}
+ "nginx"
+{% elif inventory_hostname in groups.app %}
+ "wordpress"
+{% endif %}
+  required_acks: 1
+  compression: gzip

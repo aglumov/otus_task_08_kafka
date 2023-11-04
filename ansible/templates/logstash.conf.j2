@@ -1,0 +1,39 @@
+input {
+  kafka {
+    bootstrap_servers => "
+{%- for i in groups.kafka %}
+{{ hostvars[i].ansible_host }}:9092{% if not loop.last %},{% endif %}
+{%- endfor %}
+" 
+    topics => ["nginx", "wordpress"]
+    decorate_events => extended
+  }
+}
+
+output {
+  opensearch {
+    hosts       => [
+{%- for i in groups.os %}
+"https://{{ hostvars[i].ansible_host }}:9200"{% if not loop.last %}, {% endif %}
+{%- endfor %}
+]
+    user        => "admin"
+    password    => "admin"
+    index       => "%{[@metadata][kafka][topic]}-%{+YYYY.MM.dd}"
+    ssl_certificate_verification => false
+  }
+  stdout { codec => rubydebug }
+}
+
+#output {
+#  kafka {
+#    id => "{{ inventory_hostname }}"
+#    acks => "1"
+#    codec => json
+#    topic_id => "{{ inventory_hostname }}"
+#    bootstrap_servers => "
+#{%- for i in groups.kafka %}
+#{{ hostvars[i].ansible_host }}:9092{% if not loop.last %},{% endif %}
+#{%- endfor %}"
+#  }
+#}

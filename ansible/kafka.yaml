@@ -1,0 +1,86 @@
+- name: Kafka | Install Java
+  ansible.builtin.apt:
+    name: "default-jre-headless"
+    state: latest
+    update_cache: true
+
+- name: Kafka | Add kafka user
+  ansible.builtin.user:
+    name: "kafka"
+    shell: "/bin/false"
+    system: false
+    create_home: false
+
+- name: Kafka | Make dir for Kafka
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: kafka
+    group: kafka
+  loop:
+  - /opt/kafka
+
+- name: Kafka | Download Kafka
+  ansible.builtin.unarchive:
+    src: "https://dlcdn.apache.org/kafka/3.6.0/kafka_2.13-3.6.0.tgz"
+    dest: "/opt/kafka"
+    remote_src: true
+    extra_opts: 
+    - "--strip-components=1"
+    owner: kafka
+    group: kafka
+
+- name: Kafka | Configure connect to zookeeper
+  ansible.builtin.lineinfile:
+    path: "/opt/kafka/config/server.properties"
+    search_string: "zookeeper.connect="
+    line: |
+      zookeeper.connect=
+      {%- for i in groups.kafka %}
+      {{ hostvars[i].ansible_host }}:2181{% if not loop.last %},{% endif %}
+      {%- endfor %}
+
+- name: Kafka | Configure broker id
+  ansible.builtin.lineinfile:
+    path: "/opt/kafka/config/server.properties"
+    search_string: "broker.id="
+    line: "broker.id={{ my_id }}"
+
+- name: Kafka | Copy kafka systemd unit file
+  ansible.builtin.copy:
+    src: files/kafka.service
+    dest: /etc/systemd/system/kafka.service    
+
+- name: Kafka | Check if zookeeper is started
+  ansible.builtin.systemd:
+    name: zookeeper
+    state: started
+    daemon_reload: true
+
+- name: Kafka | Check if kafka is started
+  ansible.builtin.systemd:
+    name: kafka
+    state: started
+    daemon_reload: true
+
+- name: Kafka | Wait for kafka to startup
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "9092"
+    delay: 5
+    connect_timeout: 1
+    timeout: 60
+      
+- name: Kafka | Add topics
+  ansible.builtin.shell:
+    cmd: |
+      /opt/kafka/bin/kafka-topics.sh --create --topic {{ item }} --replication-factor 2 --partitions 2 --bootstrap-server ' 
+      {%- for i in groups.kafka %}
+      {{ hostvars[i].ansible_host }}:9092{% if not loop.last %},{% endif %}
+      {%- endfor %}'
+  ignore_errors: true
+  run_once: true
+  loop:
+  - wordpress
+  - nginx
+

@@ -1,0 +1,60 @@
+%{ for i, host in lb_vm_names ~}
+${lb_vm_names[i]} ansible_host=${lb_ip_address_list[i]}
+%{ endfor ~}
+%{ for i, host in db_vm_names ~}
+${db_vm_names[i]} ansible_host=${db_ip_address_list[i]}
+%{ endfor ~}
+%{ for i, host in app_vm_names ~}
+${app_vm_names[i]} ansible_host=${app_ip_address_list[i]}
+%{ endfor ~}
+%{ for i, host in os_vm_names ~}
+${os_vm_names[i]} ansible_host=${os_ip_address_list[i]} ip=${os_ip_address_list[i]} roles=data,master,ingest
+%{ endfor ~}
+%{ for i, host in kafka_vm_names ~}
+${kafka_vm_names[i]} ansible_host=${kafka_ip_address_list[i]} my_id=${i}
+%{ endfor ~}
+
+[lb]
+%{ for i, host in lb_vm_names ~}
+${lb_vm_names[i]}
+%{ endfor ~}
+
+[db]
+%{ for i, host in db_vm_names ~}
+${db_vm_names[i]}
+%{ endfor ~}
+
+[app]
+%{ for i, host in app_vm_names ~}
+${app_vm_names[i]}
+%{ endfor ~}
+
+[os]
+%{ for i, host in os_vm_names ~}
+${os_vm_names[i]}
+%{ endfor ~}
+
+[os-cluster]
+%{ for i, host in os_vm_names ~}
+${os_vm_names[i]}
+%{ endfor ~}
+
+[master]
+%{ for i, host in os_vm_names ~}
+${os_vm_names[i]}
+%{ endfor ~}
+
+[kafka]
+%{ for i, host in kafka_vm_names ~}
+${kafka_vm_names[i]}
+%{ endfor ~}
+
+[dashboards]
+${os_vm_names[0]}
+
+[logstash]
+${os_vm_names[0]}
+
+[all:vars]
+public_ip=${lb_nat_ip_address_list[0]}
+ansible_user=ubuntu
