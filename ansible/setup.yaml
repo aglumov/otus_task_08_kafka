@@ -86,10 +86,6 @@
     notify: restart opensearch-dashboards
     when: inventory_hostname in groups["dashboards"]
 
-  - name: Install logstash
-    include_tasks: "logstash.yaml"
-    when: inventory_hostname in groups.logstash
-
   - name: Install Zookeeper
     include_tasks: "zookeeper.yaml"
     when: inventory_hostname in groups.kafka
@@ -97,6 +93,10 @@
   - name: Install Kafka
     include_tasks: "kafka.yaml"
     when: inventory_hostname in groups.kafka
+
+  - name: Install logstash
+    include_tasks: "logstash.yaml"
+    when: inventory_hostname in groups.logstash
 
   - name: Install Filebeat
     include_tasks: "filebeat.yaml"
